@@ -16,15 +16,17 @@ const Navbar = () => {
       </div>
 
       <div className='nav-middle flex-div'>
-        <input type='text' placeholder='Search' />
-        <img src={search_icon} alt='search pic' />
+        <div className='search-box flex-div'>
+          <input type='text' placeholder='Search' />
+          <img src={search_icon} alt='search pic' />
+        </div>
       </div>
 
       <div className='nav-right flex-div'>
         <img src={upload_icon} alt='upload pic' />
         <img src={more_icon} alt='more pic' />
         <img src={notification_icon} alt='note pic' />
-        <img className='user0icon' src={profile_icon} alt='profile pic' />
+        <img className='user-icon' src={profile_icon} alt='profile pic' />
       </div>
     </nav>
   );

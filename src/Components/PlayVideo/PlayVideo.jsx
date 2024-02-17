@@ -70,7 +70,7 @@ const PlayVideo = () => {
           <img src={user_profile} alt='user pic' />
           <div>
             <h3>
-              Jack Master <span>1 day ago</span>
+              Jack Master <span>2 day ago</span>
             </h3>
             <p>
               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa
@@ -89,7 +89,7 @@ const PlayVideo = () => {
           <img src={user_profile} alt='user pic' />
           <div>
             <h3>
-              Jack Master <span>1 day ago</span>
+              Jack Master <span>14 day ago</span>
             </h3>
             <p>
               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa
@@ -108,7 +108,7 @@ const PlayVideo = () => {
           <img src={user_profile} alt='user pic' />
           <div>
             <h3>
-              Jack Master <span>1 day ago</span>
+              Jack Master <span>19 day ago</span>
             </h3>
             <p>
               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa

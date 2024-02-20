@@ -6,16 +6,29 @@ import share from '../../assets/share.png';
 import save from '../../assets/save.png';
 import jack from '../../assets/jack.png';
 import user_profile from '../../assets/user_profile.jpg';
-import { useState } from 'react';
-import { API_KEY } from '../../data';
+import { useEffect, useState } from 'react';
+import { API_KEY, value_converter } from '../../data';
+import moment from 'moment';
 
 const PlayVideo = ({ videoId }) => {
   const [apiData, setApiData] = useState(null);
+  const [channelData, setChannelData] = useState(null);
 
   const fetchVideoData = async () => {
     const videoDetails_url = `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=${API_KEY}`;
-    await fetch(videoDetails_url);
+    await fetch(videoDetails_url)
+      .then((res) => res.json())
+      .then((data) => setApiData(data.items[0]));
   };
+
+  const fetchOtherData = async () => {
+    const channelData_url = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${apiData.snippet.channelId}&key=${API_KEY}`;
+    await fetch(channelData_url);
+  };
+
+  useEffect(() => {
+    fetchVideoData();
+  }, []);
 
   return (
     <div className='play-video'>
@@ -26,17 +39,19 @@ const PlayVideo = ({ videoId }) => {
         allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
         allowfullscreen
       ></iframe>
-      <h3>Best YouTube Channel To Learn Web Development</h3>
+      <h3>{apiData ? apiData.snippet.title : 'Title Here'}</h3>
       <div className='play-video-info'>
-        <p>1525 Views &bull; 2 days ago</p>
+        <p>
+          {apiData ? value_converter(apiData.statistics.viewCount) : '16K'}{' '}
+          &bull; {apiData ? moment(apiData.snippet.publishedAt).fromNow() : ''}
+        </p>
         <div>
           <span>
             <img src={like} alt='like pic' />
-            125
+            {apiData ? value_converter(apiData.statistics.likeCount) : 155}
           </span>
           <span>
             <img src={dislike} alt='dislike pic' />
-            12
           </span>
           <span>
             <img src={share} alt='share pic' />
@@ -52,16 +67,23 @@ const PlayVideo = ({ videoId }) => {
       <div className='publisher'>
         <img src={jack} alt='jack pic' />
         <div>
-          <p>GreatStack</p>
+          <p>{apiData ? apiData.snippet.channelTitle : ''}</p>
           <span>1M Subscribers</span>
         </div>
         <button>Subscribe</button>
       </div>
       <div className='vid-description'>
-        <p>Channel that makes learning Easy</p>
+        <p>
+          {apiData
+            ? apiData.snippet.description.slice(0, 255)
+            : 'Description Here'}
+        </p>
         <p>Subscribe GreatStack to Watch More Tutorials on web development</p>
         <hr />
-        <h4>130 Comments</h4>
+        <h4>
+          {apiData ? value_converter(apiData.statistics.commentCount) : 101}{' '}
+          Comments
+        </h4>
         <div className='comment'>
           <img src={user_profile} alt='user pic' />
           <div>

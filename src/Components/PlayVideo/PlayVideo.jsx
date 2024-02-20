@@ -4,7 +4,7 @@ import like from '../../assets/like.png';
 import dislike from '../../assets/dislike.png';
 import share from '../../assets/share.png';
 import save from '../../assets/save.png';
-import jack from '../../assets/jack.png';
+// import jack from '../../assets/jack.png';
 import user_profile from '../../assets/user_profile.jpg';
 import { useEffect, useState } from 'react';
 import { API_KEY, value_converter } from '../../data';
@@ -13,6 +13,7 @@ import moment from 'moment';
 const PlayVideo = ({ videoId }) => {
   const [apiData, setApiData] = useState(null);
   const [channelData, setChannelData] = useState(null);
+  const [commentData, setCommentData] = useState([]);
 
   const fetchVideoData = async () => {
     const videoDetails_url = `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=${API_KEY}`;
@@ -23,12 +24,24 @@ const PlayVideo = ({ videoId }) => {
 
   const fetchOtherData = async () => {
     const channelData_url = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${apiData.snippet.channelId}&key=${API_KEY}`;
-    await fetch(channelData_url);
+    await fetch(channelData_url)
+      .then((res) => res.json())
+      .then((data) => setChannelData(data.items[0]));
+
+    // fetch comment data
+    const comment_url = `https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&videoId=${videoId}&key=${API_KEY}`;
+    await fetch(comment_url)
+      .then((res) => res.json())
+      .then((data) => setCommentData(data.items));
   };
 
   useEffect(() => {
     fetchVideoData();
   }, []);
+
+  useEffect(() => {
+    fetchOtherData();
+  }, [apiData]);
 
   return (
     <div className='play-video'>
@@ -65,10 +78,18 @@ const PlayVideo = ({ videoId }) => {
       </div>
       <hr />
       <div className='publisher'>
-        <img src={jack} alt='jack pic' />
+        <img
+          src={channelData ? channelData.snippet.thumbnails.default.url : ''}
+          alt='jack pic'
+        />
         <div>
           <p>{apiData ? apiData.snippet.channelTitle : ''}</p>
-          <span>1M Subscribers</span>
+          <span>
+            {channelData
+              ? value_converter(channelData.statistics.subscriberCount)
+              : '1M'}{' '}
+            Subscribers
+          </span>
         </div>
         <button>Subscribe</button>
       </div>
@@ -84,26 +105,31 @@ const PlayVideo = ({ videoId }) => {
           {apiData ? value_converter(apiData.statistics.commentCount) : 101}{' '}
           Comments
         </h4>
-        <div className='comment'>
-          <img src={user_profile} alt='user pic' />
-          <div>
-            <h3>
-              Jack Master <span>1 day ago</span>
-            </h3>
-            <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa
-              voluptas tenetur qui aspernatur nulla id asperiores delectus unde
-              consequatur, obcaecati, repellat molestias architecto.
-            </p>
-            <div className='comment-action'>
-              <img src={like} alt='like pic' />
-              <span>233</span>
-              <img src={dislike} alt='dislike pic' />
-              <span>2</span>
+        {commentData.map((item, index) => {
+          return (
+            <div key={index} className='comment'>
+              <img src={user_profile} alt='user pic' />
+              <div>
+                <h3>
+                  Jack Master <span>1 day ago</span>
+                </h3>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa
+                  voluptas tenetur qui aspernatur nulla id asperiores delectus
+                  unde consequatur, obcaecati, repellat molestias architecto.
+                </p>
+                <div className='comment-action'>
+                  <img src={like} alt='like pic' />
+                  <span>233</span>
+                  <img src={dislike} alt='dislike pic' />
+                  <span>2</span>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className='comment'>
+          );
+        })}
+
+        {/* <div className='comment'>
           <img src={user_profile} alt='user pic' />
           <div>
             <h3>
@@ -159,7 +185,7 @@ const PlayVideo = ({ videoId }) => {
               <span>2</span>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
